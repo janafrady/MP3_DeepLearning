@@ -1,0 +1,7 @@
+network,architecture,learning_rate,epochs,replacement,training_time,final_cost,training_accuracy
+1 Hidden - 3 Nodes,"[2, 3, 2]",0.75,1000,0,1.1755,0.029224,100.0
+1 Hidden - 5 Nodes,"[2, 5, 2]",0.75,1000,0,1.1937,0.011567,100.0
+1 Hidden - 10 Nodes,"[2, 10, 2]",0.75,1000,0,1.1928,0.010345,100.0
+1 Hidden - 20 Nodes,"[2, 20, 2]",0.75,1000,0,1.1634,0.03599,100.0
+2 Hidden - 10 Nodes Each,"[2, 10, 10, 2]",0.75,1000,0,1.461,1.671111,90.0
+3 Hidden - 10 Nodes Each,"[2, 10, 10, 10, 2]",0.75,1000,0,1.7411,0.079484,100.0

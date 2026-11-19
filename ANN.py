@@ -1,5 +1,5 @@
-from numpy import array, zeros, ones, arange, exp, dot, save, pi, linspace,\
-                  matrix, ceil, mean, meshgrid, stack, mod
+from numpy import array, zeros, ones, arange, exp, dot, save, pi, linspace, \
+    matrix, ceil, mean, meshgrid, stack, mod
 from numpy.random import randn, randint, uniform, normal, seed, shuffle
 from numpy.linalg import norm
 import matplotlib.pylab as plt
@@ -7,8 +7,9 @@ import sys
 
 from matplotlib import rc
 
-rc('font',**{'family':'sans-serif','sans-serif':['Computer Modern']})
-rc('text', usetex = True)
+rc('font', family='sans-serif')
+rc('text', usetex=False)
+
 
 class GeneralNetwork:
     ''' A GeneralNetwork object contains information about network architecture.
@@ -17,8 +18,9 @@ class GeneralNetwork:
         plan to incorporate other variants.
 
     '''
-    def __init__(self, number_of_layers : int, neurons_per_layer : list, verbose = 0, \
-                       activation_function = "sigmoid", vis = False):
+
+    def __init__(self, number_of_layers: int, neurons_per_layer: list, verbose=0,
+                 activation_function="sigmoid", vis=False):
         '''
         Inputs: number_of_layers  (int)  : specifies number of layers in the network.
                 neurons_per_layer (list) : specifies number of neurons in the network.
@@ -40,37 +42,35 @@ class GeneralNetwork:
             print("The variable neurons_per_layer must be a list!")
             sys.exit()
 
-        list_of_weight_matrices = [normal(size=(neurons_per_layer[0], \
+        list_of_weight_matrices = [normal(size=(neurons_per_layer[0],
                                                 neurons_per_layer[0]))]
         # create first entry connecting input layer to first hidden layer
-        list_of_bias_vectors    = [normal(size=(neurons_per_layer[0], 1))]
+        list_of_bias_vectors = [normal(size=(neurons_per_layer[0], 1))]
         # Generate first entry in the bias vector. It corresponds to the bias
         # for the first layer
 
-
         # Initialization
-        self.weights             = list_of_weight_matrices
-        self.biases              = list_of_bias_vectors
+        self.weights = list_of_weight_matrices
+        self.biases = list_of_bias_vectors
 
-        self.number_of_layers    = number_of_layers
-        self.neurons_per_layer   = neurons_per_layer
+        self.number_of_layers = number_of_layers
+        self.neurons_per_layer = neurons_per_layer
 
-        self.verbose             = verbose
+        self.verbose = verbose
 
-        self.activation          = []
-        self.delta               = []
+        self.activation = []
+        self.delta = []
 
         self.activation_function = activation_function
-        self.vis                 = vis
+        self.vis = vis
 
         # Populate list of weight matrices per layer
         for i in arange(1, len(neurons_per_layer)):
-            self.weights.append(normal(size=(neurons_per_layer[i],\
-                                        neurons_per_layer[i - 1])))
+            self.weights.append(normal(size=(neurons_per_layer[i],
+                                             neurons_per_layer[i - 1])))
             self.biases.append(normal(size=(neurons_per_layer[i], 1)))
 
-
-    def activate(self, x : array, W : array, b : array):
+    def activate(self, x: array, W: array, b: array):
         '''
         Inputs:    x (1D numpy array) : input from previous layer
                    W (2D numpy array) : weight matrix for current layer
@@ -102,14 +102,14 @@ class GeneralNetwork:
                     dummy[i, 0] = 0.01 * dummy[i, 0]
             return dummy
 
-    def predict(self, x : array):
+    def predict(self, x: array):
         for s in arange(self.number_of_layers):
             a = self.activate(x, self.weights[s], self.biases[s])
             x = a
 
         return a
 
-    def gradient(self, x : array):
+    def gradient(self, x: array):
         '''
 
         Inputs      : x     (2D numpy array)
@@ -141,7 +141,7 @@ class GeneralNetwork:
 
         return
 
-    def train(self, Data, eta : float = 1, epochs : int = 10000, replacement : bool = 0):
+    def train(self, Data, eta: float = 1, epochs: int = 10000, replacement: bool = 0):
         '''
         Inputs:   Data        (object) : this object contains information
                                          about the training data. The object
@@ -163,7 +163,7 @@ class GeneralNetwork:
                      such that the f_NN(x_train) = y_train, where f_NN is a function
                      outlining the architecture of the neural network.
         '''
-        cost   = zeros((epochs, Data.xtrain.shape[1]))
+        cost = zeros((epochs, Data.xtrain.shape[1]))
         # create empty 2D numpy array for storage
         xtrain = zeros((Data.xtrain.shape[0], 1))
         # create empty 1D numpy array which will be overwritten with training data
@@ -178,37 +178,38 @@ class GeneralNetwork:
             for counter in arange(shuffled_ints.shape[0]):
                 # begin cycle over training set
                 if not replacement:
-                        k = shuffled_ints[counter]
-                        # without replacement
+                    k = shuffled_ints[counter]
+                    # without replacement
                 else:
-                        k = randint(Data.xtrain.shape[1])
-                        # with replacement
+                    k = randint(Data.xtrain.shape[1])
+                    # with replacement
 
                 # Training Data
                 xtrain[:, 0], ytrain[:, 0] = Data.xtrain[:, k], Data.ytrain[:, k]
 
                 # Forward Prop
                 for s in arange(self.number_of_layers):
-                    self.activation.append(self.activate(xtrain,            \
-                        self.weights[s], self.biases[s]))
+                    self.activation.append(self.activate(xtrain,
+                                                         self.weights[s], self.biases[s]))
                     xtrain = self.activation[s]
 
                 #  Back Prop
-                self.delta.append(self.gradient(self.activation[-1]) * (self.activation[-1] - ytrain))
+                self.delta.append(self.gradient(
+                    self.activation[-1]) * (self.activation[-1] - ytrain))
                 for s in arange(0, self.number_of_layers-1):
-                    self.delta.append(self.gradient(self.activation[-2 - s]) * \
-                    dot(self.weights[-1  - s].T, self.delta[s]))
+                    self.delta.append(self.gradient(self.activation[-2 - s]) *
+                                      dot(self.weights[-1 - s].T, self.delta[s]))
 
                 #  Update weights
-                self.weights[0]  -= eta * self.delta[-1] * Data.xtrain[:, k].T
+                self.weights[0] -= eta * self.delta[-1] * Data.xtrain[:, k].T
                 for s in arange(1, self.number_of_layers):
                     if s >= 1:
-                        self.weights[s]   -= eta * dot(self.delta[-(s + 1)], self.activation[s - 1].T)
+                        self.weights[s] -= eta * \
+                            dot(self.delta[-(s + 1)], self.activation[s - 1].T)
 
                 deltaflip = self.delta
                 deltaflip.reverse()
                 # reverse to put bias update in loop
-
 
                 # Update biases
                 for s in arange(self.number_of_layers):
@@ -216,35 +217,37 @@ class GeneralNetwork:
 
                 # Reset activation and errors for next loop
                 self.activation = []
-                self.delta      = []
+                self.delta = []
 
                 # Save cost
                 cost[update, counter] = self.cost_function(Data)
             if update == epochs - 1 and self.vis == True:
-               self.visual(Data)
+                self.visual(Data)
             if self.verbose:
                 # verbosity flag prints to console
-                print('Average cost for epoch ', update + 1, 'is :', mean(cost[update, :]))
+                print('Average cost for epoch ', update +
+                      1, 'is :', mean(cost[update, :]))
 
         return cost
 
-    def visual(self, Data, no_of_points : int = 1000):
+    def visual(self, Data, no_of_points: int = 100, filename=None, title=None):
         '''
         '''
-        x    = zeros((2,1))
+        x = zeros((2, 1))
 
-        X, Y = meshgrid(linspace(0, 1, no_of_points), linspace(0, 1, no_of_points))
+        X, Y = meshgrid(linspace(0, 1, no_of_points),
+                        linspace(0, 1, no_of_points))
         # create grid of points
         X1, X2 = array(X.ravel()), array(Y.ravel())
         # vectorize
-        Stack  = stack((X1, X2), axis = 1)
+        Stack = stack((X1, X2), axis=1)
         # left to right stack, columnwise
-        empty  = zeros(X.shape[0]*X.shape[0])
+        empty = zeros(X.shape[0]*X.shape[0])
         # matrix of values
 
         for i in arange(Stack.shape[0]):
             # run over each coordinate
-            x[0,0], x[1,0] = Stack[i, 0], Stack[i, 1]
+            x[0, 0], x[1, 0] = Stack[i, 0], Stack[i, 1]
             # input
             Predictions = self.predict(x)
             # predict
@@ -260,20 +263,26 @@ class GeneralNetwork:
         plt.style.use('Solarize_Light2')
         plt.figure()
         # plot figure
-        plt.contourf(X, Y, Pred, cmap = 'cividis', alpha = 0.8)
+        plt.contourf(X, Y, Pred, cmap='cividis', alpha=0.8)
         # plot contour
 
-        plt.scatter(Data.xtrain[0, 0:5], Data.xtrain[1, 0:5], marker='^', c = 'k', lw=3)
+        plt.scatter(Data.xtrain[0, 0:5],
+                    Data.xtrain[1, 0:5], marker='^', c='k', lw=3)
         # plot first half of training set
-        plt.scatter(Data.xtrain[0, 5:], Data.xtrain[1, 5:], marker='o', c='w', lw=3)
+        plt.scatter(Data.xtrain[0, 5:],
+                    Data.xtrain[1, 5:], marker='o', c='w', lw=3)
         # plot second half of training set
-        if Data.highamdata:
-            plt.savefig('higham_planes.png')
-            # save figure
-        else:
-            plt.savefig('planes.png')
-            # save figure
+        plt.title(title or "Neural Network Decision Boundary")
+        plt.xlabel("Feature 1 (x1)")
+        plt.ylabel("Feature 2 (x2)")
+        plt.tight_layout()
+
+        if filename is None:
+            filename = 'higham_planes.png' if Data.highamdata else 'planes.png'
+
+        plt.savefig(filename, dpi=300)
         plt.show()
+        plt.close()
         return
 
     def cost_function(self, Data):
@@ -287,15 +296,15 @@ class GeneralNetwork:
                       function with the actual data.
 
         '''
-        temp_cost = zeros((Data.xtrain.shape[1],1))
+        temp_cost = zeros((Data.xtrain.shape[1], 1))
         # generate zeros 2D numpy array for storing cost
-        x         = zeros((Data.xtrain.shape[0],1))
+        x = zeros((Data.xtrain.shape[0], 1))
         # generate zeros 2D numpy array for storing training data before
         # evaluation
         for i in arange(temp_cost.shape[0]):
             # begin loop for computing each individual cost from each piece
             # of training data
-            x[0,0], x[1,0] = Data.xtrain[0,i], Data.xtrain[1,i]
+            x[0, 0], x[1, 0] = Data.xtrain[0, i], Data.xtrain[1, i]
 
             # Feedforward
             for s in arange(self.number_of_layers):
@@ -305,11 +314,14 @@ class GeneralNetwork:
             temp_cost[i] = norm(x.ravel() - Data.ytrain[:, i], 2)
 
         return norm(temp_cost, 2)**2
+
+
 class Data:
     ''' Data object contains information about training data. Its initialization
         generates the training data for this particular problem
     '''
-    def __init__(self, number_of_data_points : int, highamdata = True):
+
+    def __init__(self, number_of_data_points: int, highamdata=True):
         '''
         Inputs: number_of_data_points (int)     - total data points without higham
                                                   data.
@@ -321,35 +333,34 @@ class Data:
 
         if not self.highamdata:
             # generate data
-            self.x           = linspace(0, 1, number_of_data_points)
-            x1               = zeros((1, number_of_data_points))
-            x2               = zeros((1, number_of_data_points))
-            x1[0,:]          = uniform(0, 1, self.x.shape[0])
-            x2[0,:]          = uniform(0, 1, self.x.shape[0])
-            y1               = zeros((1, int(number_of_data_points / 2)))
+            self.x = linspace(0, 1, number_of_data_points)
+            x1 = zeros((1, number_of_data_points))
+            x2 = zeros((1, number_of_data_points))
+            x1[0, :] = uniform(0, 1, self.x.shape[0])
+            x2[0, :] = uniform(0, 1, self.x.shape[0])
+            y1 = zeros((1, int(number_of_data_points / 2)))
             # assign labelling
-            y2               = ones((1,  int(number_of_data_points / 2)))
+            y2 = ones((1,  int(number_of_data_points / 2)))
             # assign labelling
-            #y3               = zeros((1, int(number_of_data_points / 2)))
+            # y3               = zeros((1, int(number_of_data_points / 2)))
         else:
             # use higham data
             x1 = array([0.1, 0.3, 0.1, 0.6, 0.4, 0.6, 0.5, 0.9, 0.4, 0.7])
             x2 = array([0.1, 0.4, 0.5, 0.9, 0.2, 0.3, 0.6, 0.2, 0.4, 0.6])
 
-
-            y1               = zeros((1, int(number_of_data_points / 2)))
+            y1 = zeros((1, int(number_of_data_points / 2)))
             # assign labelling
-            y2               = ones((1,  int(number_of_data_points / 2)))
+            y2 = ones((1,  int(number_of_data_points / 2)))
             # assign labelling
 
             # zeros arrays for training data
 
-        self.xtrain      = zeros((2, number_of_data_points))
-        self.ytrain      = zeros((2, number_of_data_points))
+        self.xtrain = zeros((2, number_of_data_points))
+        self.ytrain = zeros((2, number_of_data_points))
 
-            # begin assignment
-        self.xtrain[0,:], self.xtrain[1,:]                = x1, x2
-        self.ytrain[0, 0:int(number_of_data_points / 2)]  = y2
-        self.ytrain[0, int(number_of_data_points   / 2):] = y1
-        self.ytrain[1, 0:int(number_of_data_points / 2)]  = y1
-        self.ytrain[1, int(number_of_data_points   / 2):] = y2
+        # begin assignment
+        self.xtrain[0, :], self.xtrain[1, :] = x1, x2
+        self.ytrain[0, 0:int(number_of_data_points / 2)] = y2
+        self.ytrain[0, int(number_of_data_points / 2):] = y1
+        self.ytrain[1, 0:int(number_of_data_points / 2)] = y1
+        self.ytrain[1, int(number_of_data_points / 2):] = y2
