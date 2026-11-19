@@ -12,6 +12,8 @@ LEARNING_RATE = 0.75
 OUTPUT_DIR = Path(__file__).resolve().parent
 RESULTS_FILE = OUTPUT_DIR / "results.csv"
 PLOT_FILE = OUTPUT_DIR / "cost_comparison.png"
+GRAPHS_DIR = OUTPUT_DIR / "graphs"
+GRAPHS_DIR.mkdir(parents=True, exist_ok=True)
 
 # experiments = [
 #     {
@@ -96,7 +98,7 @@ for experiment in experiments:
     model.visual(
     data,
     no_of_points=100,
-    filename=str(OUTPUT_DIR / f"boundary_{'_'.join(map(str, experiment['layers']))}.png"),
+    filename=str(GRAPHS_DIR / f"boundary_{'_'.join(map(str, experiment['layers']))}.png"),
     title=f"Decision Boundary: {experiment['name']}"
 )
     
